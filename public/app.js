@@ -1,6 +1,7 @@
-var redditClone = angular.module('redditClone', []);
+angular
+  .module('redditClone', [])
 
-redditClone.controller('MainController', ['$scope', function($scope) {
+  .controller('MainController', ['$scope', function($scope) {
 
   $scope.submitForm = function(isValid) {
     if (isValid) {
