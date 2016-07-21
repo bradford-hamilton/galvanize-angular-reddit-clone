@@ -1,0 +1,58 @@
+body {
+  background-color: #CEE3F8;
+}
+
+.posts {
+  list-style-type: none;
+  min-height: 23rem;
+  border: 2px solid #cfcfcf;
+  border-radius: 4px;
+  background-color:#f0eded;
+  margin-top: 1rem;
+  overflow: auto;
+}
+
+img {
+  height: 20rem;
+  margin-top: 1rem;
+}
+
+.author {
+  font-style: italic;
+}
+
+#post-view {
+  margin: 8rem;
+}
+
+.post-view-design {
+  border-radius: 5px;
+  background-color: #EFF7FF;
+  border: 2px solid #e8e8e8;
+  padding-bottom: 1rem;
+}
+
+.has-error {
+  border: red;
+}
+
+.has-success {
+  border: green;
+}
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+}
+
+select {
+  background-color: #fbedcf;
+}

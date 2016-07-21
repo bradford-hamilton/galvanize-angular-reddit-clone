@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Angular Reddit Clone</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body ng-app='redditClone' ng-controller='MainController' ng-cloak>
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid nav-container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="">Reddit Clone</a>
+      </div>
+      <!-- ADD POST BUTTON -->
+      <ul class="nav navbar-nav">
+        <li><button ng-click='togglePostView()' type='button' class='btn btn-default navbar-btn'>Add a post &nbsp;&nbsp;<span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></li>
+      </ul>
+      <!-- SEARCH FORM -->
+      <div class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" ng-model='searchText'>
+        </div>
+      </div>
+      <!-- DROPDOWN -->
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          Sort By:
+          <select ng-model='dropdown'>
+            <option value='score'>Votes</option>
+            <option value='date'>Date</option>
+            <option value='title'>Title</option>
+          </select>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- CREATE POST VIEW -->
+  <div class="container-fluid" ng-show='createPostView' id='post-view' ng-cloak>
+    <div class="row">
+      <div class="col-sm-8 post-view-design">
+        <div class="page-header"><h1 class='text-center'>Add a Post</h1></div>
+
+        <form name="postForm" ng-submit="submitForm(postForm.$valid)" novalidate>
+          <!-- TITLE -->
+          <div class="form-group" ng-class="{ 'has-error' : postForm.title.$invalid && !postForm.title.$pristine,
+                                              'has-success' : postForm.title.$valid }">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" ng-model="post.title" ng-minlength="3" required>
+            <p ng-show="postForm.title.$error.minlength" class="help-block">Your title is too short.</p>
+          </div>
+          <!-- AUTHOR -->
+          <div class="form-group" ng-class="{ 'has-error' : postForm.author.$invalid && !postForm.author.$pristine,
+                                              'has-success' : postForm.author.$valid}">
+            <label>Author</label>
+            <input type="text" name="author" class="form-control" ng-model="post.author" ng-minlength="3" ng-maxlength="25" required>
+            <p ng-show="postForm.author.$error.minlength" class="help-block">Your name is too short.</p>
+            <p ng-show="postForm.author.$error.maxlength" class="help-block">Your name is too long.</p>
+          </div>
+          <!-- IMAGE -->
+          <div class="form-group" ng-class="{ 'has-error' : postForm.image.$invalid && !postForm.image.$pristine,
+                                              'has-success' : postForm.image.$valid}">
+            <label>Image</label>
+            <input type="text" name="image" class="form-control" ng-model="post.image" required>
+            <p ng-show="postForm.image.$invalid && !postForm.image.$pristine" class="help-block">Enter a valid image.</p>
+          </div>
+          <!-- DESCRIPTION -->
+          <div class="form-group" ng-class="{ 'has-error' : postForm.description.$invalid && !postForm.description.$pristine,
+                                              'has-success' : postForm.description.$valid }">
+            <label>Description</label>
+            <input type="text" name="description" class="form-control" ng-model="post.description" ng-minlength="10" required>
+            <p ng-show="postForm.description.$error.minlength" class="help-block">Your description is too short.</p>
+          </div>
+          <!-- SUBMIT BUTTON -->
+          <button type="submit" class="btn btn-primary" ng-click='togglePostView()' ng-disabled="postForm.$invalid">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- POSTS VIEW -->
+  <div class="container-fluid" ng-cloak>
+    <div class="row">
+      <ul class='col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1'>
+        <li ng-repeat="post in posts | orderBy: '-score' | filter: searchText | orderBy: dropdown" class='posts col-lg-12'>
+          <img ng-src="{{ post.image }}" alt="Image" class='col-lg-3'>
+          <h4>{{ post.title }} &nbsp;&nbsp;|&nbsp;&nbsp;
+            <i class="fa fa-arrow-up" aria-hidden="true" ng-click='post.upvote()'></i>
+            <span ng-class='{ green: post.score > 0, red: post.score < 0 }'>{{ post.score }}</span>
+            <i class="fa fa-arrow-down" aria-hidden="true" ng-click='post.downvote()'></i>
+          </h4>
+          <p class='author'>Written By: {{ post.author }}</p>
+          <br>
+          <p>{{ post.description }}</p>
+          <br><br>
+          <p>
+            <!-- DATE OF POST -->
+            <i class="fa fa-calendar" aria-hidden="true"></i> {{ post.date | date: 'fullDate' }}&nbsp;&nbsp;|&nbsp;&nbsp;
+            <!-- COMMENTS FOR POST  -->
+            <i class="fa fa-comments-o" aria-hidden="true"></i> {{ post.comments.length }}
+              <a href="" ng-click='commentView=true'>
+                <ng-pluralize count='post.comments.length' when="{ '1': ' Comment', 'other': ' Comments'}">
+              </a> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <!-- ADD COMMENT -->
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i><a href="" ng-click='commentView=true'> Add comment</a>
+          <p>
+          <br><br>
+          <div class='col-lg-12' ng-show='commentView' id='comment-view' >
+          <p class='text-center'>--__--__--__--__--<a href="" ng-click='commentView=false'> Collapse Comments </a>--__--__--__--__--</p>
+
+
+            <form name='post.commentForm' ng-submit="post.submitCommentForm()">
+              <!-- ADD COMMENT -->
+              <label for="author">Comment</label>
+              <input type="text" name="author" ng-model='post.formComment.comment' required>
+              <!-- ADD COMMENT AUTHOR -->
+              <label for="author">Author</label>
+              <input type="text" name="author" ng-model='post.formComment.author' required>
+
+              <input type="submit" name="name" value="Submit">
+            </form>
+
+            <ul ng-repeat='data in post.comments'>
+              <li>
+                <p>"{{ data.comment }}"</p>
+                <small>{{ data.date | date: 'fullDate' }}</small><br>
+                <small> - {{ data.author }}</small><br><br>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+  <script src="app.js"></script>
+  <script>$('.dropdown-toggle').dropdown();</script>
+</body>
+</html>
